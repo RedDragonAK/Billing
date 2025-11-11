@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  category    String
+  price       Float
+  imageUrl    String
+  description String?
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  customerName  String?
+  customerPhone String?
+  customerEmail String?
+  paymentMethod String         // "CASH", "CARD", or "UPI"
+  paymentStatus String         @default("PENDING") // "PENDING" or "PAID"
+  totalAmount   Float
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  items         OrderItem[]
+  notifications Notification[]
+}
+
+model OrderItem {
+  id            String   @id @default(uuid())
+  orderId       String
+  itemId        String
+  nameSnapshot  String
+  priceSnapshot Float
+  quantity      Int
+  lineTotal     Float
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  item          Item     @relation(fields: [itemId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([orderId])
+  @@index([itemId])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type        String   // "ORDER_PLACED", "PAYMENT_CONFIRMED", "ORDER_READY"
+  recipient   String   // "CUSTOMER" or "ADMIN"
+  message     String
+  phoneNumber String?
+  email       String?
+  status      String   @default("PENDING") // "PENDING", "SENT", "FAILED"
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([orderId])
+  @@index([status])
+}
+
