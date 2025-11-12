@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import axios from 'axios'
+import api from '../utils/api'
 import { QRCodeSVG } from 'qrcode.react'
 
 function Checkout() {
@@ -37,7 +37,7 @@ function Checkout() {
     setError('')
 
     try {
-      const response = await axios.post('/api/orders', {
+      const response = await api.post('/api/orders', {
         items: cart,
         paymentMethod,
         customerName: customerName.trim() || null,

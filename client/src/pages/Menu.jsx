@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../utils/api'
 import ItemCard from '../components/ItemCard'
 import CartDrawer from '../components/CartDrawer'
 
@@ -17,7 +17,7 @@ function Menu() {
 
   const fetchMenu = async () => {
     try {
-      const response = await axios.get('/api/menu')
+      const response = await api.get('/api/menu')
       setItems(response.data)
       setLoading(false)
     } catch (error) {
@@ -134,5 +134,7 @@ function Menu() {
 }
 
 export default Menu
+
+
 
 

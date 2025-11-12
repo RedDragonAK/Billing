@@ -93,3 +93,5 @@ This will install `qrcode.react` which is needed for UPI QR codes.
 - You can mark orders as "PAID" in the admin dashboard when payment is received
 
 
+
+

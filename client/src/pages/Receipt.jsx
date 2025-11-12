@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../utils/api'
 import { QRCodeSVG } from 'qrcode.react'
 
 function Receipt() {
@@ -16,7 +16,7 @@ function Receipt() {
 
   const fetchOrder = async () => {
     try {
-      const response = await axios.get(`/api/orders/${code}`)
+      const response = await api.get(`/api/orders/${code}`)
       setOrder(response.data)
       setLoading(false)
     } catch (err) {

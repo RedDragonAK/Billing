@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import api from '../utils/api'
 
 function Admin() {
   const [adminKey, setAdminKey] = useState('')
@@ -21,10 +21,10 @@ function Admin() {
 
     try {
       const [ordersRes, notificationsRes] = await Promise.all([
-        axios.get('/api/admin/orders', {
+        api.get('/api/admin/orders', {
           headers: { 'x-admin-key': adminKey }
         }),
-        axios.get('/api/admin/notifications', {
+        api.get('/api/admin/notifications', {
           headers: { 'x-admin-key': adminKey }
         })
       ])
@@ -41,7 +41,7 @@ function Admin() {
 
   const updatePaymentStatus = async (orderId, newStatus) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/admin/orders/${orderId}/status`,
         { paymentStatus: newStatus },
         {
