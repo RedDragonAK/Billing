@@ -23,6 +23,15 @@ function generateOrderCode() {
   return prefix + randomNum;
 }
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    database: process.env.DATABASE_URL ? 'configured' : 'not configured'
+  });
+});
+
 // Get all menu items
 app.get('/api/menu', async (req, res) => {
   try {
@@ -33,7 +42,11 @@ app.get('/api/menu', async (req, res) => {
     res.json(items);
   } catch (error) {
     console.error('Error fetching menu:', error);
-    res.status(500).json({ error: 'Failed to fetch menu' });
+    res.status(500).json({ 
+      error: 'Failed to fetch menu',
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -221,7 +234,18 @@ app.patch('/api/admin/orders/:id/status', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Error handling for database connection
+prisma.$connect()
+  .then(() => {
+    console.log('Database connected successfully');
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`API available at http://localhost:${PORT}/api/menu`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to connect to database:', error);
+    console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+    process.exit(1);
+  });
 
